@@ -1,46 +1,66 @@
 package visualizer.array;
 
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class Box<T> {
-    private double x, y;           // Position
-    private double boxSize;        // Size of the box
-    private T value;               // Value inside the box
-    private boolean isHighlighted; // Tracks if the box is highlighted
-    private Color fillColor;       // Fill color (can change for highlighting)
-    private Color borderColor;     // Border color (can change for highlighting)
+    private double x, y, boxSize;
+    private T value;
 
-    private final Color defaultFillColor = Color.LIGHTGRAY; // Default box color
-    private final Color defaultBorderColor = Color.BLACK;  // Default border color
+    // JavaFX Nodes
+    private final Rectangle node;  // Rectangle representing the box
+    private final Text textNode;   // Text displaying the value inside the box
 
     public Box(double x, double y, double boxSize, T value) {
         this.x = x;
         this.y = y;
         this.boxSize = boxSize;
         this.value = value;
-        this.isHighlighted = false; // Default: Not highlighted
-        this.fillColor = defaultFillColor;
-        this.borderColor = defaultBorderColor;
+
+        // Initialize the Rectangle
+        this.node = new Rectangle(x, y, boxSize, boxSize);
+        this.node.setFill(Color.LIGHTGRAY); // Default fill color
+        this.node.setStroke(Color.BLACK);  // Default border color
+
+        // Initialize the Text
+        this.textNode = new Text(x + boxSize / 2, y + boxSize / 2, String.valueOf(value));
+        this.textNode.setFont(new Font("Arial", 16));
+        this.textNode.setFill(Color.BLACK);
+
+        // Center the text inside the box
+        centerText();
     }
 
-    // Highlight the box with custom colors
-    public void highlight(Color fillColor, Color borderColor) {
-        this.fillColor = fillColor;
-        this.borderColor = borderColor;
-        this.isHighlighted = true;
+    public Rectangle getNode() {
+        return node;
     }
 
-    // Reset to default colors
-    public void resetHighlight() {
-        this.fillColor = defaultFillColor;
-        this.borderColor = defaultBorderColor;
-        this.isHighlighted = false;
+    public Text getTextNode() {
+        return textNode;
     }
 
     public void setValue(T value) {
         this.value = value;
+        this.textNode.setText(String.valueOf(value)); // Update text
+        centerText(); // Re-center text
+    }
+
+    public T getValue() {
+        return value;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+        this.node.setX(x); // Update Rectangle's position
+        centerText();      // Re-center the text
+    }
+
+    public void setY(double y) {
+        this.y = y;
+        this.node.setY(y); // Update Rectangle's position
+        centerText();      // Re-center the text
     }
 
     public double getX() {
@@ -55,20 +75,30 @@ public class Box<T> {
         return boxSize;
     }
 
-    public void draw(GraphicsContext gc) {
-        // Fill the box
-        gc.setFill(fillColor);
-        gc.fillRect(x, y, boxSize, boxSize);
+    public void highlight(Color fillColor, Color borderColor) {
+        this.node.setFill(fillColor);
+        this.node.setStroke(borderColor);
+    }
 
-        // Draw the border
-        gc.setStroke(borderColor);
-        gc.strokeRect(x, y, boxSize, boxSize);
+    public void resetHighlight() {
+        this.node.setFill(Color.LIGHTGRAY);
+        this.node.setStroke(Color.BLACK);
+    }
 
-        // Draw the value inside the box
-        gc.setFill(Color.BLACK); // Text color
-        gc.setFont(new Font("Arial", 16));
-        double textX = x + boxSize / 2 - (gc.getFont().getSize() / 4) * String.valueOf(value).length();
-        double textY = y + boxSize / 2 + gc.getFont().getSize() / 4;
-        gc.fillText(String.valueOf(value), textX, textY);
+    // Center the text inside the rectangle
+    private void centerText() {
+        double textWidth = textNode.getBoundsInLocal().getWidth();
+        double textHeight = textNode.getBoundsInLocal().getHeight();
+        textNode.setX(x + (boxSize - textWidth) / 2);
+        textNode.setY(y + (boxSize + textHeight) / 2 - textHeight / 4); // Adjust for baseline
+    }
+
+    public void draw() {
+        textNode.setFill(Color.BLACK); // Text should always be visible
+        node.setX(x);
+        node.setY(y);
+        node.setWidth(boxSize);
+        node.setHeight(boxSize);
+        centerText();
     }
 }

@@ -4,6 +4,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import visualizer.CanvasConfig;
 import visualizer.array.arraysorters.ArraySortingStrategy;
@@ -15,14 +16,14 @@ public abstract class ArrayVisualizer<T> {
     protected T[] array; // Array to visualize
     protected final ArrayAnimationManager animationManager = new ArrayAnimationManager();
     protected ArraySortingStrategy sortingStrategy;
-    protected GraphicsContext gc;
+    protected Pane pane;
 
     protected double defaultWidth = CanvasConfig.DEFAULT_WIDTH;
     protected double defaultHeight = CanvasConfig.DEFAULT_HEIGHT;
 
-    public ArrayVisualizer(GraphicsContext gc, T[] array){
+    public ArrayVisualizer(Pane pane, T[] array){
         this.array = array;
-        this.gc = gc;
+        this.pane = pane;
     }
 
     public void sortAndVisualize(Comparator<T> comparator) {

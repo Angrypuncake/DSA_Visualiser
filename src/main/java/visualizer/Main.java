@@ -13,7 +13,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        int[] intArray = {5, 3, 8, 6, 2};
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/VisualizerView.fxml"));
         VBox root = loader.load();
 
