@@ -7,6 +7,8 @@ public class BubbleSort implements ArraySortingStrategy {
     @Override
     public <T> void sort(T[] array, AnimationCallback callback, Comparator<T> comparator) {
         T[] workingCopy = array.clone();
+        // bubble sort works by repeatedly swapping adjacent elements if they are in the wrong order
+        // The array is cloned to avoid modifying the original array
         for (int i = 0; i < workingCopy.length; i++) {
             System.out.print(workingCopy[i] + " ");
         }

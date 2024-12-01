@@ -1,14 +1,17 @@
 package visualizer.array;
 
 import javafx.scene.canvas.GraphicsContext;
+import visualizer.array.HighlightStrategy.HighlightStrategy;
 
 public class BoxVisualizer<T> extends ArrayVisualizer {
     private Box[] boxes;
+    private final HighlightStrategy highlightStrategy;
 
-    public BoxVisualizer(GraphicsContext gc, T[] array) {
+    public BoxVisualizer(GraphicsContext gc, T[] array, HighlightStrategy highlightStrategy) {
         super(gc, array);
         boxes = new Box[array.length]; // Initialize the boxes array
         createBoxes();
+        this.highlightStrategy = highlightStrategy;
     }
 
     private void createBoxes() {
@@ -41,13 +44,14 @@ public class BoxVisualizer<T> extends ArrayVisualizer {
 
     public void highlight(int... indices) {
         for (int index : indices) {
-            boxes[index].setHighlighted(true);
+            highlightStrategy.highlight(boxes[index]);
         }
     }
 
-    public void resetHighlight() {
-        for (Box box : boxes) {
-            box.setHighlighted(false);
+    @Override
+    protected void resetHighlight() {
+        for (int i = 0; i < array.length; i++) {
+            highlightStrategy.reset(boxes[i]);
         }
     }
 

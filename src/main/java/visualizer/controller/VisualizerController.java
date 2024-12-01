@@ -1,60 +1,93 @@
 package visualizer.controller;
 
+import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import visualizer.CanvasConfig;
+import visualizer.SortingStrategyRegistrar;
 import visualizer.array.ArrayVisualizer;
 import visualizer.array.BoxVisualizer;
+import visualizer.array.HighlightStrategy.BorderHighlightStrategy;
+import visualizer.array.HighlightStrategy.ColorHighlightStrategy;
+import visualizer.array.HighlightStrategy.HighlightStrategy;
 import visualizer.array.arraysorters.BubbleSort;
+import visualizer.array.arraysorters.InsertionSort;
+import visualizer.array.arraysorters.SelectionSort;
+import visualizer.array.arraysorters.SortingStrategyRegistry;
 import visualizer.array.arraysorters.comparators.IntegerComparator;
 import visualizer.array.arraysorters.comparators.ReverseIntegerComparator;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 
 public class VisualizerController {
-    private final Canvas canvas;
-    private final ArrayVisualizer<Integer> visualizer;
+    @FXML
+    private VBox root; // The root VBox from the FXML
+    @FXML
+    private Canvas canvas;
 
-    public VisualizerController(int[] intArray) {
-        // Convert int[] to Integer[]
-        Integer[] array = toIntegerArray(intArray);
+    @FXML
+    private ComboBox<String> strategySelector;
 
-        // Create the canvas
-        this.canvas = new Canvas(CanvasConfig.DEFAULT_WIDTH, CanvasConfig.DEFAULT_HEIGHT);
+    @FXML
+    private Button randomizeButton;
+
+    @FXML
+    private Button sortButton;
+
+    private ArrayVisualizer<Integer> visualizer;
+
+    public void initialize() {
+
+        canvas = new Canvas(CanvasConfig.DEFAULT_WIDTH, CanvasConfig.DEFAULT_HEIGHT);
+
+        // Add the canvas to the VBox (at the top, before other elements)
+        root.getChildren().add(0, canvas);
+        // Initialize the visualizer
+
+        Integer[] array = {5, 3, 8, 6, 2};
+
+        SortingStrategyRegistrar.registerAll();
+        // Set up the scene
         GraphicsContext gc = canvas.getGraphicsContext2D();
+        HighlightStrategy hs = new ColorHighlightStrategy(Color.LIGHTBLUE, Color.DARKBLUE);
+        visualizer = new BoxVisualizer<>(gc, array, hs);
 
-        // Create the visualizer
-        this.visualizer = new BoxVisualizer<>(gc, array);
-        visualizer.setSortingStrategy(new BubbleSort());
+        // Populate the strategy selector
+        strategySelector.getItems().addAll("Bubble Sort", "Insertion Sort", "Selection Sort");
+        strategySelector.setValue("Bubble Sort");
+        strategySelector.setOnAction(event -> updateSortingStrategy(strategySelector.getValue()));
+
+        // Set button actions
+        randomizeButton.setOnAction(event -> randomizeArray());
+        sortButton.setOnAction(event -> sortArray());
+
+        // Draw initial state
+        visualizer.draw();
     }
 
-    public VBox getRoot() {
-        // Draw the initial state of the array
-        visualizer.draw();
-
-        // Create a button for sorting
-        Button sortButton = new Button("Sort");
-        sortButton.setOnAction(event -> {
-            sortArray();
-            System.out.println("Sort button pressed."); // Debug in console
-        });
-        sortButton.setPrefWidth(100); // Set button size
-        sortButton.setStyle("-fx-font-size: 14; -fx-padding: 5;");
-
-        // Add the canvas and button to the layout
-        VBox root = new VBox(10, canvas, sortButton);
-        root.setStyle("-fx-padding: 20; -fx-alignment: center; -fx-border-color: black; -fx-border-width: 2;"); // Debug style
-        return root;
+    private void randomizeArray() {
+        // Randomize the array
+        Integer[] randomizedArray = Arrays.copyOf(visualizer.getArray(), visualizer.getArray().length);
+        Collections.shuffle(Arrays.asList(randomizedArray));
+        visualizer.setArray(randomizedArray);
+        visualizer.draw(); // Redraw the updated array
     }
 
     private void sortArray() {
-        // Sort and visualize the array
-        Comparator<Integer> comparator = new IntegerComparator();
-        visualizer.sortAndVisualize(comparator);
+        visualizer.sortAndVisualize(Integer::compareTo);
         visualizer.playAnimations();
+    }
+
+    private void updateSortingStrategy(String strategyName) {
+        visualizer.setSortingStrategy(SortingStrategyRegistry.getStrategy(strategyName));
     }
 
     private static Integer[] toIntegerArray(int[] intArray) {
