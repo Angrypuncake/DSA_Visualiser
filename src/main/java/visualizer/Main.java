@@ -5,7 +5,8 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import visualizer.array.BarChartVisualizer;
+import visualizer.array.ArrayVisualizer;
+import visualizer.array.BoxVisualizer;
 
 public class Main extends Application {
     @Override
@@ -14,10 +15,10 @@ public class Main extends Application {
 
         // Create the canvas using default sizes
         Canvas canvas = new Canvas(CanvasConfig.DEFAULT_WIDTH, CanvasConfig.DEFAULT_HEIGHT);
-        BarChartVisualizer visualizer = new BarChartVisualizer(array);
+        ArrayVisualizer visualizer = new BoxVisualizer(array);
 
         // Draw the array on the canvas
-        visualizer.draw(canvas.getGraphicsContext2D(), canvas.getWidth(), canvas.getHeight());
+        visualizer.draw(canvas.getGraphicsContext2D());
 
         // Set up the scene
         VBox root = new VBox(canvas);
