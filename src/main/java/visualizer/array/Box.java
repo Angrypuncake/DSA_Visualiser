@@ -4,16 +4,23 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class Box{
+public class Box<T> {
     private double x,y;
     private double boxSize;
-    private int value;
+    private T value;
+    private boolean isHighlighted; // Tracks if the box is highlighted
+    private Color defaultColor = Color.LIGHTGRAY;
 
-    public Box(double x, double y, double boxSize, int value){
+    public Box(double x, double y, double boxSize, T value){
         this.x = x;
         this.y = y;
         this.boxSize = boxSize;
         this.value = value;
+        this.isHighlighted = false; // Default: Not highlighted
+    }
+
+    public void setHighlighted(boolean highlighted) {
+        this.isHighlighted = highlighted;
     }
 
     public double getX(){
@@ -28,7 +35,7 @@ public class Box{
         return boxSize;
     }
 
-    public int getValue(){
+    public T getValue(){
         return value;
     }
 
@@ -44,16 +51,30 @@ public class Box{
         this.boxSize = boxSize;
     }
 
-    public void setValue(int value){
+    public void setValue(T value){
         this.value = value;
     }
 
-    public void draw(GraphicsContext gc){
+    public void draw(GraphicsContext gc) {
+        // Set the box's fill color based on the highlight state
+        gc.setFill(isHighlighted ? Color.RED : Color.LIGHTGRAY);
+        gc.fillRect(x, y, boxSize, boxSize); // Fill the box with the appropriate color
+
+        // Draw the box border
+        gc.setStroke(Color.BLACK);
         gc.strokeRect(x, y, boxSize, boxSize);
-        gc.setFill(Color.BLACK);
+
+        // Draw the value inside the box
+        gc.setFill(Color.BLACK); // Text color
         gc.setFont(new Font("Arial", 16));
         double textX = x + boxSize / 2 - (gc.getFont().getSize() / 4) * String.valueOf(value).length();
         double textY = y + boxSize / 2 + gc.getFont().getSize() / 4;
         gc.fillText(String.valueOf(value), textX, textY);
+    }
+
+
+    public void moveTo(double x, double y) {
+        this.x = x;
+        this.y = y;
     }
 }
