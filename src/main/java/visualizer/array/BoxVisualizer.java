@@ -2,6 +2,7 @@ package visualizer.array;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
+import visualizer.CanvasConfig;
 import visualizer.array.HighlightStrategy.HighlightStrategy;
 
 public class BoxVisualizer<T> extends ArrayVisualizer {
@@ -16,7 +17,7 @@ public class BoxVisualizer<T> extends ArrayVisualizer {
     }
 
     private void createBoxes() {
-        double boxSize = 100;
+        double boxSize = CanvasConfig.BOX_SIZE;
         for (int i = 0; i < array.length; i++) {
             double x = i * boxSize + defaultWidth / 2 - array.length * boxSize / 2;
             double y = defaultHeight / 2;
@@ -43,6 +44,23 @@ public class BoxVisualizer<T> extends ArrayVisualizer {
         for (Box<T> box : boxes) {
             box.draw();
         }
+    }
+
+    @Override
+    void animateSwap(int i, int j) {
+
+        Box<?> box1 = boxes[i];
+        Box<?> box2 = boxes[j];
+
+        animationManager.addSwapAnimation(
+                i,
+                j,
+                box1,
+                box2,
+                () -> highlight(i, j), // Highlight boxes being swapped
+                this::resetHighlight // Reset highlights after swapping
+        );
+
     }
 
     public void highlight(int... indices) {

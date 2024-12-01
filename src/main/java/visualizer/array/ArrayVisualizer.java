@@ -14,7 +14,7 @@ import java.util.Comparator;
 
 public abstract class ArrayVisualizer<T> {
     protected T[] array; // Array to visualize
-    protected final ArrayAnimationManager animationManager = new ArrayAnimationManager();
+    protected ArrayAnimationManager animationManager;
     protected ArraySortingStrategy sortingStrategy;
     protected Pane pane;
 
@@ -24,6 +24,11 @@ public abstract class ArrayVisualizer<T> {
     public ArrayVisualizer(Pane pane, T[] array){
         this.array = array;
         this.pane = pane;
+        animationManager = new ArrayAnimationManager(this);
+    }
+
+    public void setSpeedFactor(double speedFactor) {
+        animationManager.setSpeedFactor(speedFactor);
     }
 
     public void sortAndVisualize(Comparator<T> comparator) {
@@ -33,27 +38,19 @@ public abstract class ArrayVisualizer<T> {
         sortingStrategy.sort(array, this::animateSwap, comparator);
     }
 
-    private void animateSwap(int i, int j) {
-        animationManager.addSwapAnimation(
-                () -> highlight(i, j),
-                () -> swap(i, j),
-                this::resetHighlight
-        );
-    }
+    abstract void animateSwap(int i, int j);
+
 
     public void playAnimations() {
         animationManager.playAnimations(this::draw);
-    }
-
-    public void resetAnimations() {
         animationManager.resetAnimations();
+
     }
 
     // Abstract methods for highlighting, swapping, and drawing
     protected abstract void highlight(int... indices);
     protected abstract void resetHighlight();
     protected void swap(int i, int j) {
-        System.out.println("Swapping indices " + i + " and " + j);
         T temp = array[i];
         array[i] = array[j];
         array[j] = temp;
@@ -71,5 +68,9 @@ public abstract class ArrayVisualizer<T> {
 
     public void setSortingStrategy(ArraySortingStrategy strategy) {
         this.sortingStrategy = strategy;
+    }
+
+    public Pane getPane() {
+        return this.pane;
     }
 }

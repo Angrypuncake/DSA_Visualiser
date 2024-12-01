@@ -45,6 +45,7 @@ public class Box<T> {
         this.value = value;
         this.textNode.setText(String.valueOf(value)); // Update text
         centerText(); // Re-center text
+        draw(); // Re-center and apply changes
     }
 
     public T getValue() {

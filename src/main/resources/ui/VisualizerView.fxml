@@ -16,4 +16,6 @@
     <!-- Buttons -->
     <Button fx:id="randomizeButton" text="Randomize" prefWidth="100"/>
     <Button fx:id="sortButton" text="Sort" prefWidth="100"/>
+    <ComboBox fx:id="speedSelector" prefWidth="150" promptText="Speed (e.g., 1x)"/>
+
 </VBox>

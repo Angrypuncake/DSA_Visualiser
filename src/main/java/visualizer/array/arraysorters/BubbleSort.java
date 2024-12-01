@@ -23,6 +23,7 @@ public class BubbleSort implements ArraySortingStrategy {
                     T temp = workingCopy[j];
                     workingCopy[j] = workingCopy[j + 1];
                     workingCopy[j + 1] = temp;
+
                     callback.onSwap(j, j + 1);
 
                     swapped = true;
